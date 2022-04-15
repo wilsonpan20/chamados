@@ -1,4 +1,3 @@
-
 import { Switch } from 'react-router-dom';
 import Route from './Route';
 

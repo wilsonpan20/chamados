@@ -73,9 +73,6 @@ export default function New(){
       status:status,
       complemento:complemento,
       userId:user.uid,
-
-
-      
     })
     .then(()=>{
      toast.success('Chamado criando com sucesso!')
