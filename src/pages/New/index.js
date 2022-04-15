@@ -23,15 +23,12 @@ export default function New(){
   //Chamado quando troca o assunto
   function handleChangeSelect(e){
     setAssunto(e.target.value);
-    
-    
   }
 
 
   //Chamado quando troca o status
   function handleOptionChange(e){
-    
-    
+    setStatus(e.target.value);
   }
 
   return(
