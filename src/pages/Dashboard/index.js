@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 
 import firebase from '../../services/firebaseConnection';
+import Modal from '../../components/Modal';
 
 const listRef = firebase.firestore().collection('chamados').orderBy('created', 'desc');
 
@@ -19,8 +20,25 @@ export default function Dashboard(){
   const [isEmpty, setIsEmpty] = useState(false);
   const [lastDocs, setLastDocs] = useState();
 
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [detail, setDetail] = useState();
 
   useEffect(()=> {
+
+    async function loadChamados(){
+      await listRef.limit(5)
+      .get()
+      .then((snapshot) => {
+        updateState(snapshot)
+      })
+      .catch((err)=>{
+        console.log('Deu algum erro: ', err);
+        setLoadingMore(false);
+      })
+  
+      setLoading(false);
+  
+    }
 
     loadChamados();
 
@@ -29,21 +47,6 @@ export default function Dashboard(){
     }
   }, []);
 
-  
-  async function loadChamados(){
-    await listRef.limit(5)
-    .get()
-    .then((snapshot) => {
-      updateState(snapshot)
-    })
-    .catch((err)=>{
-      console.log('Deu algum erro: ', err);
-      setLoadingMore(false);
-    })
-
-    setLoading(false);
-
-  }
 
 
   async function updateState(snapshot){
@@ -86,6 +89,12 @@ export default function Dashboard(){
     .then((snapshot)=>{
       updateState(snapshot)
     })
+  }
+
+
+  function togglePostModal(item){
+    setShowPostModal(!showPostModal) //trocando de true pra false
+    setDetail(item);
   }
  
 
@@ -154,12 +163,12 @@ export default function Dashboard(){
                       </td>
                       <td data-label="Cadastrado">{item.createdFormated}</td>
                       <td data-label="#">
-                        <button className="action" style={{backgroundColor: '#3583f6' }}>
+                        <button className="action" style={{backgroundColor: '#3583f6' }} onClick={ () => togglePostModal(item) }>
                           <FiSearch color="#FFF" size={17} />
                         </button>
-                        <button className="action" style={{backgroundColor: '#F6a935' }}>
+                        <Link className="action" style={{backgroundColor: '#F6a935' }} to={`/new/${item.id}`} >
                           <FiEdit2 color="#FFF" size={17} />
-                        </button>
+                        </Link>
                       </td>
                     </tr>
                   )
@@ -174,6 +183,13 @@ export default function Dashboard(){
         )}
 
       </div>
+
+      {showPostModal && (
+        <Modal
+          conteudo={detail}
+          close={togglePostModal}
+        />
+      )}
 
     </div>
   )
